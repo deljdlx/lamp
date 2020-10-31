@@ -38,6 +38,11 @@ installEssentials()
     #pdf to image appplication
     #sudo apt-get install poppler-utils
 
+    # install brew
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    echo "export PATH=\$PATH:/home/linuxbrew/.linuxbrew/bin/" >> ~/.bashrc
+
+
 }
 
 
@@ -146,6 +151,44 @@ configurePHP()
 }
 
 
+installPostgresSQL()
+{
+    sudo apt install postgresql postgresql-contrib
+    #sudo -u postgres psql -c "SELECT version();"
+
+    sudo apt-get install php-pgsql
+    
+    #sudo passwd postgres
+    #su - postgres
+    #psql -c "ALTER USER postgres WITH PASSWORD 'securepass_here';"
+
+    #sudo vim /etc/postgresql/11/main/pg_hba.conf
+    #host  all  all <Helix ALM product server IP address>/32  md5
+    #host  all  all 0.0.0.0/0  md5
+
+    #sudo vim /etc/postgresql/11/main/postgresql.conf
+    #listen_addresses = '*'
+    sudo service postgresql start
+}
+
+installElasticsearch() {
+    # DOC https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+    sudo apt-get install -y apt-transport-https    
+    echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+    sudo apt-get update && sudo apt-get install -y elasticsearch
+
+    #sudo -i service elasticsearch start
+    #sudo -i service elasticsearch stop
+}
+
+# todo
+# installOpenVPN() 
+# {
+#    sudo apt-get install -y openvpn
+#    sudo apt-get install -y network-manager-openvpn
+# }
+
 installMySQL()
 {
     #installation mariadb-server============
@@ -200,6 +243,11 @@ netUtils()
 }
 
 
+
+
+
+
+
 installNPM()
 {
     #install npm==========================================
@@ -217,6 +265,8 @@ installNPM()
 jsTools() {
     npm install -g jshint
     npm install --global eslint
+
+    npm install --global gulp-cli
     #npm install standard --global
 }
 
@@ -235,6 +285,73 @@ installExtra()
 #==========================================================================================
 #==========================================================================================
 #==========================================================================================
+
+
+letsEncryptWSL()
+{
+    # documentation pour windows https://certbot.eff.org/lets-encrypt/windows-other.html
+
+    # https://dl.eff.org/certbot-beta-installer-win32.exe
+    # bien penser à allumer le forwarding de ports
+    # C:\WINDOWS\system32> certbot certonly --standalone
+    # certificats in C:\Certbot\archive\home.jlb.ninja
+
+    # dans /etc/apache2/sites-available/default-ssl.conf
+    # modifier les fichiers
+    # SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+    # SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+
+    #   /etc/apache2/sites-available/000-default.conf
+    #   NameVirtualHost *:80
+    #   NameVirtualHost *:443
+    #
+    #   <VirtualHost *:443>
+    #       DocumentRoot "/var/www/html"
+    #       ServerName home.jlb.ninja
+    #       SSLEngine on
+    #       SSLCertificateFile "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+    #       SSLCertificateKeyFile "/etc/ssl/private/ssl-cert-snakeoil.key"
+    #   </VirtualHost>
+    #
+    #   <VirtualHost *:80>
+    #       DocumentRoot "/var/www/html"
+    #       ServerName home.jlb.ninja
+    #   </VirtualHost>
+    #
+}
+
+
+configureSSL()
+{
+    sudo apt-get install certbot python-certbot-apache
+    sudo certbot --apache
+    #sudo certbot renew --dry-run
+
+
+    sudo apt install libnss3-tools
+    brew install mkcert
+    mkcert localhost 127.0.0.1 ::1
+
+    # add to default vhost
+    # NameVirtualHost *:80
+    # NameVirtualHost *:443
+
+    #<VirtualHost *:443>
+    #    DocumentRoot "/var/www/html"
+    #    ServerName localhost
+    #    SSLEngine on
+    #    SSLCertificateFile "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+    #    SSLCertificateKeyFile "/etc/ssl/private/ssl-cert-snakeoil.key"
+    #</VirtualHost>
+}
+
+#==========================================================================================
+#==========================================================================================
+#==========================================================================================
+
+
+
 
 
 installEssentials
