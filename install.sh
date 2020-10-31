@@ -329,6 +329,7 @@ configureSSL()
     #sudo certbot renew --dry-run
 
 
+    # doc https://github.com/FiloSottile/mkcert
     sudo apt install libnss3-tools
     brew install mkcert
     mkcert localhost 127.0.0.1 ::1
